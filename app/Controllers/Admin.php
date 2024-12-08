@@ -782,70 +782,79 @@ class Admin extends BaseController
         // Gabungkan jilid dan level
         $combinedLevel = $jilid . $level;  // Hasilnya: 'a8'
 
-        // Buat data gabungan untuk validasi
-        $data = [
-            'jilid' => $jilid,
-            'materi' => $materi,
-            'level' => $combinedLevel,
-            'tema' => $tema,
-        ];
+        // dd($combinedLevel);
 
-        $levelValidasi = 'required|max_length[3]';
-        if (!is_null($id_level)) {
-            $levelNew = $this->level
-                ->select('*')
-                ->where('level', $combinedLevel)
-                ->first();
+        $inputMengurut = $this->level->coba($this->request->getVar());
 
-            if ($levelNew) {
-                $levelValidasi .= '|is_unique[level.level,id_level,' . $id_level . ']';
-            }
-        } else {
-            $levelValidasi .= '|is_unique[level.level]';
-        }
-        // dd($levelValidasi);
 
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'jilid' => [
-                'label' => 'Jilid',
-                'rules' => 'required|max_length[1]',
-                'errors' => [
-                    'required' => 'Jilid wajib diisi.',
-                    'max_length' => 'Jilid tidak boleh lebih dari 1 karakter.',
-                    'integer'  => 'Kartu harus berupa angka.',
-                ],
-            ],
-            'materi' => [
-                'label' => 'Materi',
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Materi wajib diisi.',
-                ],
-            ],
-            'level' => [
-                'label' => 'level',
-                'rules' => $levelValidasi,
-                'errors' => [
-                    'required' => 'Level wajib diisi.',
-                    'max_length' => 'Level tidak boleh lebih dari 3 karakter.',
-                    'is_unique' => "level $combinedLevel sudah tersedia",
-                ],
-            ],
-            'tema' => [
-                'label' => 'tema',
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'tema wajib diisi.',
-                ],
-            ],
 
-        ]);
 
-        if (!$validation->run($data)) {
-            session()->setFlashdata(['msg' => $validation->getErrors(), 'warna' => 'danger']);
-            return redirect()->back()->withInput();
-        }
+
+
+        // // Buat data gabungan untuk validasi
+        // $data = [
+        //     'jilid' => $jilid,
+        //     'materi' => $materi,
+        //     'level' => $combinedLevel,
+        //     'tema' => $tema,
+        // ];
+
+        // $levelValidasi = 'required|max_length[3]';
+        // if (!is_null($id_level)) {
+        //     $levelNew = $this->level
+        //         ->select('*')
+        //         ->where('level', $combinedLevel)
+        //         ->first();
+
+        //     if ($levelNew) {
+        //         $levelValidasi .= '|is_unique[level.level,id_level,' . $id_level . ']';
+        //     }
+        // } else {
+        //     $levelValidasi .= '|is_unique[level.level]';
+        // }
+        // // dd($levelValidasi);
+
+        // $validation = \Config\Services::validation();
+        // $validation->setRules([
+        //     'jilid' => [
+        //         'label' => 'Jilid',
+        //         'rules' => 'required|max_length[1]',
+        //         'errors' => [
+        //             'required' => 'Jilid wajib diisi.',
+        //             'max_length' => 'Jilid tidak boleh lebih dari 1 karakter.',
+        //             'integer'  => 'Kartu harus berupa angka.',
+        //         ],
+        //     ],
+        //     'materi' => [
+        //         'label' => 'Materi',
+        //         'rules' => 'required',
+        //         'errors' => [
+        //             'required' => 'Materi wajib diisi.',
+        //         ],
+        //     ],
+        //     'level' => [
+        //         'label' => 'level',
+        //         'rules' => $levelValidasi,
+        //         'errors' => [
+        //             'required' => 'Level wajib diisi.',
+        //             'max_length' => 'Level tidak boleh lebih dari 3 karakter.',
+        //             'is_unique' => "level $combinedLevel sudah tersedia",
+        //         ],
+        //     ],
+        //     'tema' => [
+        //         'label' => 'tema',
+        //         'rules' => 'required',
+        //         'errors' => [
+        //             'required' => 'tema wajib diisi.',
+        //         ],
+        //     ],
+
+        // ]);
+
+        // if (!$validation->run($data)) {
+        //     session()->setFlashdata(['msg' => $validation->getErrors(), 'warna' => 'danger']);
+        //     return redirect()->back()->withInput();
+        // }
 
 
         if (!is_null($id_level)) {

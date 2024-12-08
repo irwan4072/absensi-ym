@@ -20,6 +20,75 @@ class LevelModel extends Model
         }
     }
 
+
+    function coba($data)
+    {
+        // dd($data);
+        // $data = "a18";
+        // $levelHurufDanAngka = $this->__pisahkanHurufDanAngka($data);
+        $cekKetersediaan = $this->select()->like('level', $data['jilid'] . '%')->orderBy('urutan', "DESC")->first();
+        // dd($cekKetersediaan);
+
+        if ($cekKetersediaan) {
+            // d($cekKetersediaan);
+            $jilidTersedia = $cekKetersediaan['jilid'];
+
+
+            $urutanTersedia = $cekKetersediaan['urutan'];
+            $levelTersedia = $cekKetersediaan['level'];
+
+            $sql = "
+                    SELECT *
+                    FROM level
+                    WHERE CAST(SUBSTRING(level, 2) AS UNSIGNED) = (
+                        SELECT MAX(CAST(SUBSTRING(level, 2) AS UNSIGNED))
+                        FROM level
+                        WHERE SUBSTRING(level, 1, 1) = '$jilidTersedia'
+                    )
+                    AND SUBSTRING(level, 1, 1) = '$jilidTersedia'
+    ";
+            $maxJilidTersedia = $this->db->query($sql)->getFirstRow();
+
+            dd($maxJilidTersedia);
+
+
+            // d($levelHurufDanAngka['angka']);
+            // d($maxJilidTersedia['nilai_maksimal']);
+            // dd($levelHurufDanAngka['angka'] == $maxJilidTersedia['nilai_maksimal']);
+            // if ($levelHurufDanAngka['angka'] <= $maxJilidTersedia['nilai_maksimal']) {
+            //     $updateKodeLevel = $this->update("SUBSTRING(level, 1, 1) = 'b' AND CAST(SUBSTRING(level, 2) AS UNSIGNED) > 10", "level = CONCAT('b', CAST(SUBSTRING(level, 2) AS UNSIGNED) + 1)");
+            // }
+            $sql = "UPDATE level SET urutan = urutan - 1 WHERE urutan >= " . $urutanTersedia;
+            $updateUrutan = $this->db->query($sql, ['active']);
+
+            // $updateUrutan = $this->update("level > 10", "level = level + 1 ");
+
+
+
+
+
+            //SELECT MAX(CAST(SUBSTRING(level, 2) AS UNSIGNED)) AS nilai_maksimal_b FROM level WHERE SUBSTRING(level, 1, 1) = 'b';
+            // UPDATE level SET level = CONCAT('b', CAST(SUBSTRING(level, 2) AS UNSIGNED) + 1) WHERE SUBSTRING(level, 1, 1) = 'b'    AND CAST(SUBSTRING(level, 2) AS UNSIGNED) > 10; UPDATE level SET level = level + 1 WHERE level > 10;
+
+        } else {
+            echo "Data tidak tersedia";
+            die;
+        }
+    }
+
+    private function __pisahkanHurufDanAngka($string)
+    {
+        // Memisahkan huruf dan angka
+        preg_match('/^([a-zA-Z]+)(\d+)$/', $string, $matches);
+
+        // Mengembalikan hasil
+        return [
+            'huruf'  => $matches[1] ?? '', // Bagian huruf
+            'angka'  => $matches[2] ?? '' // Bagian angka
+        ];
+    }
+
+
     public function insertLevel($newLevel)
     {
         $db = db_connect();

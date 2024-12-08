@@ -23,8 +23,8 @@ class App extends BaseConfig
      * environments.
      */
     // public string $baseURL = 'http://localhost/absensi_ym/';
-    public string $baseURL = 'http://192.168.177.208:8080/';
-    // public string $baseURL = 'http://localhost:8080/';
+    // public string $baseURL = 'http://192.168.177.208:8080/';
+    public string $baseURL = 'http://localhost:8080/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.

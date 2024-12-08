@@ -37,7 +37,7 @@
             <div class="sb-sidenav-menu-heading">Master</div>
 
             <a class="nav-link <?= ($title == 'YM  | Data Staff') ? 'active' : ''; ?>" href="/admin/staff">
-                <div class="sb-nav-link-icon"><i class="fa-solid fa-user-tie">></i></div>
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-user-tie"></i></div>
                 Data Staff
             </a>
             <a class="nav-link  <?= ($title == 'YM  | Data guru') ? 'active' : ''; ?>" href="/admin/guru">
