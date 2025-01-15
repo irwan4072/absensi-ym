@@ -66,7 +66,9 @@ class Myth extends BaseController
         $password = $this->request->getVar('password');
 
         // $password = password_hash($password, PASSWORD_DEFAULT);
-        // $this->user->update(2, ['password' => $password]);
+        // $update = $this->user->update(3, ['password' => $password]);
+        // dd($update);
+
         // $remember = $this->request->getVar('remember');
 
         $user = $this->user->where('username', $username)->first();

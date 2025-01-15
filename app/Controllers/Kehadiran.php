@@ -161,9 +161,9 @@ class Kehadiran extends BaseController
 
                 $levelInfo = $siswaHadir['level'];
                 $levelInt = intval($levelInfo);
-                // d($levelInfo);
+                d($levelInfo);
                 $level = $this->getMaxLevelFromDatabase($levelInfo);
-                // dd($level);
+                dd($level);
 
                 $data = [
 
@@ -206,7 +206,7 @@ class Kehadiran extends BaseController
         $query = $db->query("SELECT MAX(CAST(SUBSTRING(level, 2) AS UNSIGNED)) AS max_level FROM level WHERE level LIKE '$prefix%'");
         $result = $query->getRowArray();
         $a = $result['max_level'];
-        // dd($a);
+        d($a);
         $lanjut = 0;
         $cari = 0;
         while ($lanjut < 1) {

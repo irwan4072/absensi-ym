@@ -9,7 +9,7 @@ class LevelModel extends Model
     protected $table = 'level';
     protected $primaryKey = 'id_level';
     protected $useTimeStamps = true;
-    protected $allowedFields = ['jilid', 'materi', 'level', 'tema'];
+    protected $allowedFields = ['jilid', 'materi', 'level', 'tema', 'urutan'];
 
     public function getData($data = false)
     {
@@ -23,33 +23,68 @@ class LevelModel extends Model
 
     function coba($data)
     {
+        $db = db_connect();
         // dd($data);
-        // $data = "a18";
+        // $data = ['jilid' => "b"];
         // $levelHurufDanAngka = $this->__pisahkanHurufDanAngka($data);
-        $cekKetersediaan = $this->select()->like('level', $data['jilid'] . '%')->orderBy('urutan', "DESC")->first();
-        // dd($cekKetersediaan);
+
+        // -------------cek ketersediaan dan akhir-----
+        $cekKetersediaanJilid = $this->select()->like('level', $data['jilid'] . '%')->orderBy('urutan', "DESC")->first();
+        // dd($cekKetersediaanJilid);
+
+        if (!$cekKetersediaanJilid) {
+            $urutanMax = $this->selectMax('urutan')->first();
+            return $data;
+        } else {
+            $levelMax = substr($cekKetersediaanJilid['level'], 1);
+            // d($data['level']);
+            // dd($levelMax);
+            if ($data['level'] > $levelMax) {
+                $data['level'] = $levelMax + 1;
+                return $data;
+            } else {
+                $urutanPadaLevelTersedia = $this->select('urutan')->where('level', $data['combinedLevel'])->first();
+                // dd($urutanPadaLevelTersedia);
+                $query = "
+            UPDATE level
+            SET urutan = urutan + 1,
+                level = CONCAT(SUBSTRING(level, 1, 1), CAST(SUBSTRING(level, 2) AS UNSIGNED) + 1)
+            WHERE urutan >=" . $urutanPadaLevelTersedia['urutan'];
+                // dd($query);
+
+                $db->query($query);
+                if ($query) {
+                    return $data;
+                } else {
+                    return false;
+                }
+            }
+        }
+
+
+
 
         if ($cekKetersediaan) {
             // d($cekKetersediaan);
-            $jilidTersedia = $cekKetersediaan['jilid'];
+            //         $jilidTersedia = $cekKetersediaan['jilid'];
 
 
-            $urutanTersedia = $cekKetersediaan['urutan'];
-            $levelTersedia = $cekKetersediaan['level'];
+            //         $urutanTersedia = $cekKetersediaan['urutan'];
+            //         $levelTersedia = $cekKetersediaan['level'];
 
-            $sql = "
-                    SELECT *
-                    FROM level
-                    WHERE CAST(SUBSTRING(level, 2) AS UNSIGNED) = (
-                        SELECT MAX(CAST(SUBSTRING(level, 2) AS UNSIGNED))
-                        FROM level
-                        WHERE SUBSTRING(level, 1, 1) = '$jilidTersedia'
-                    )
-                    AND SUBSTRING(level, 1, 1) = '$jilidTersedia'
-    ";
-            $maxJilidTersedia = $this->db->query($sql)->getFirstRow();
+            //         $sql = "
+            //                 SELECT *
+            //                 FROM level
+            //                 WHERE CAST(SUBSTRING(level, 2) AS UNSIGNED) = (
+            //                     SELECT MAX(CAST(SUBSTRING(level, 2) AS UNSIGNED))
+            //                     FROM level
+            //                     WHERE SUBSTRING(level, 1, 1) = '$jilidTersedia'
+            //                 )
+            //                 AND SUBSTRING(level, 1, 1) = '$jilidTersedia'
+            // ";
+            //         $maxJilidTersedia = $this->db->query($sql)->getResultArray();
 
-            dd($maxJilidTersedia);
+            //         dd($maxJilidTersedia);
 
 
             // d($levelHurufDanAngka['angka']);

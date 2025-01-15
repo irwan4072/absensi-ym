@@ -784,7 +784,20 @@ class Admin extends BaseController
 
         // dd($combinedLevel);
 
-        $inputMengurut = $this->level->coba($this->request->getVar());
+        $inputMengurut = $this->level->coba(
+            [
+                "jilid" => $jilid,
+                "level" => $level,
+                "id_level" => $id_level,
+                "materi" => $materi,
+                "tema" => $tema,
+                "combinedLevel" => $combinedLevel,
+            ]
+        );
+        if ($inputMengurut == false) {
+            session()->setFlashdata(['msg' => 'Data gagal ditambahkan', 'warna' => 'danger']);
+            return redirect()->back()->withInput();
+        }
 
 
 
@@ -871,7 +884,7 @@ class Admin extends BaseController
             $ab =  $this->level->save([
                 'jilid' => $jilid,
                 'materi' => $materi,
-                'level' => $level,
+                'level' => $combinedLevel,
                 'tema' => $tema,
 
             ]);
