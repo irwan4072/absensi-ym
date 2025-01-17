@@ -43,7 +43,7 @@ class LevelModel extends Model
                 return false;
             }
         } else {
-
+            // dd($cekKetersediaanJilid);
             // ---------------------- cek apakah level baru melebihi nilai level maksimal------------------
             $levelMax = substr($cekKetersediaanJilid['level'], 1);
             // d($data['level']);
@@ -99,57 +99,36 @@ class LevelModel extends Model
                 }
             }
         }
-
-
-
-
-        if ($cekKetersediaan) {
-            // d($cekKetersediaan);
-            //         $jilidTersedia = $cekKetersediaan['jilid'];
-
-
-            //         $urutanTersedia = $cekKetersediaan['urutan'];
-            //         $levelTersedia = $cekKetersediaan['level'];
-
-            //         $sql = "
-            //                 SELECT *
-            //                 FROM level
-            //                 WHERE CAST(SUBSTRING(level, 2) AS UNSIGNED) = (
-            //                     SELECT MAX(CAST(SUBSTRING(level, 2) AS UNSIGNED))
-            //                     FROM level
-            //                     WHERE SUBSTRING(level, 1, 1) = '$jilidTersedia'
-            //                 )
-            //                 AND SUBSTRING(level, 1, 1) = '$jilidTersedia'
-            // ";
-            //         $maxJilidTersedia = $this->db->query($sql)->getResultArray();
-
-            //         dd($maxJilidTersedia);
-
-
-            // d($levelHurufDanAngka['angka']);
-            // d($maxJilidTersedia['nilai_maksimal']);
-            // dd($levelHurufDanAngka['angka'] == $maxJilidTersedia['nilai_maksimal']);
-            // if ($levelHurufDanAngka['angka'] <= $maxJilidTersedia['nilai_maksimal']) {
-            //     $updateKodeLevel = $this->update("SUBSTRING(level, 1, 1) = 'b' AND CAST(SUBSTRING(level, 2) AS UNSIGNED) > 10", "level = CONCAT('b', CAST(SUBSTRING(level, 2) AS UNSIGNED) + 1)");
-            // }
-            $sql = "UPDATE level SET urutan = urutan - 1 WHERE urutan >= " . $urutanTersedia;
-            $updateUrutan = $this->db->query($sql, ['active']);
-
-            // $updateUrutan = $this->update("level > 10", "level = level + 1 ");
-
-
-
-
-
-            //SELECT MAX(CAST(SUBSTRING(level, 2) AS UNSIGNED)) AS nilai_maksimal_b FROM level WHERE SUBSTRING(level, 1, 1) = 'b';
-            // UPDATE level SET level = CONCAT('b', CAST(SUBSTRING(level, 2) AS UNSIGNED) + 1) WHERE SUBSTRING(level, 1, 1) = 'b'    AND CAST(SUBSTRING(level, 2) AS UNSIGNED) > 10; UPDATE level SET level = level + 1 WHERE level > 10;
-
-        } else {
-            echo "Data tidak tersedia";
-            die;
-        }
     }
 
+    function urutkanLevelHapus($id)
+    {
+        // dd($id);
+        $db = db_connect();
+        $urutanUntukDihapus = $this->select('urutan')->where('id_level', $id)->first();
+        // dd($urutanUntukDihapus);
+        if ($urutanUntukDihapus) {
+            $urutan = $urutanUntukDihapus['urutan'];
+            // dd($urutan);
+            $query = "
+                UPDATE level
+                SET urutan = urutan - 1,
+                    level = CONCAT(SUBSTRING(level, 1, 1), CAST(SUBSTRING(level, 2) AS UNSIGNED) - 1)
+                WHERE urutan > " . $urutan;
+            // $data['urutan'] = $urutan;
+
+            $db->query($query);
+            if ($query) {
+
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            die;
+            return false;
+        }
+    }
     private function __pisahkanHurufDanAngka($string)
     {
         // Memisahkan huruf dan angka

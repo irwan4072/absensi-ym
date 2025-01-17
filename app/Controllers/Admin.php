@@ -145,9 +145,9 @@ class Admin extends BaseController
     public function level($id = false)
     {
         if ($id != false) {
-            $level = $this->level->getData($id);
+            $level = $this->level->orderBy('urutan')->getData($id);
         } else {
-            $level = $this->level->getData();
+            $level = $this->level->orderBy('urutan')->getData();
         }
         $data = [
             'title' => 'YM  | Data level',
@@ -1249,9 +1249,16 @@ class Admin extends BaseController
     }
     public function hapus_level($id)
     {
-        $hapus = $this->level->delete($id);
-        if ($hapus) {
-            session()->setFlashdata(['msg' => 'Data Berhasil dihapus', 'warna' => 'success']);
+
+        $urutkan = $this->level->urutkanLevelHapus($id);
+        if ($urutkan) {
+            $hapus = $this->level->delete($id);
+            // dd($urutkan);
+            if ($hapus) {
+                session()->setFlashdata(['msg' => 'Data Berhasil dihapus dan diurutkan kembali', 'warna' => 'success']);
+            } else {
+                session()->setFlashdata(['msg' => 'Data gagal dihapus', 'warna' => 'danger']);
+            }
         } else {
             session()->setFlashdata(['msg' => 'Data gagal dihapus', 'warna' => 'danger']);
         }
