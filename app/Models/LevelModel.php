@@ -28,33 +28,72 @@ class LevelModel extends Model
         // $data = ['jilid' => "b"];
         // $levelHurufDanAngka = $this->__pisahkanHurufDanAngka($data);
 
-        // -------------cek ketersediaan dan akhir-----
+        // -------------cek ketersediaan dan akhir melalui jilid-----
         $cekKetersediaanJilid = $this->select()->like('level', $data['jilid'] . '%')->orderBy('urutan', "DESC")->first();
         // dd($cekKetersediaanJilid);
 
         if (!$cekKetersediaanJilid) {
             $urutanMax = $this->selectMax('urutan')->first();
-            return $data;
+            if ($urutanMax) {
+                $urutan = $urutanMax['urutan'] + 1;
+                $data['urutan'] = $urutan;
+                // dd($data);
+                return $data;
+            } else {
+                return false;
+            }
         } else {
+
+            // ---------------------- cek apakah level baru melebihi nilai level maksimal------------------
             $levelMax = substr($cekKetersediaanJilid['level'], 1);
             // d($data['level']);
             // dd($levelMax);
             if ($data['level'] > $levelMax) {
-                $data['level'] = $levelMax + 1;
-                return $data;
+                $data['combinedLevel'] = $levelMax + 1;
+                $urutanPadaLevelbaru = $cekKetersediaanJilid['urutan'] + 1;
+                // dd($urutanPadaLevelbaru);
+
+                if ($urutanPadaLevelbaru) {
+                    $data['urutan'] = $urutanPadaLevelbaru;
+
+                    // dd($data);
+                    $query = "
+                    UPDATE level
+                    SET urutan = urutan + 1
+                    WHERE urutan >=" . $urutanPadaLevelbaru;
+                    // dd($query);
+
+                    $db->query($query);
+                    if ($query) {
+                        return $data;
+                    } else {
+                        return false;
+                    }
+                    return $data;
+                } else {
+                    return false;
+                }
+
+
+                // ----------------- jika level dan urutan level berada ditengah data---------------------
             } else {
                 $urutanPadaLevelTersedia = $this->select('urutan')->where('level', $data['combinedLevel'])->first();
                 // dd($urutanPadaLevelTersedia);
-                $query = "
-            UPDATE level
-            SET urutan = urutan + 1,
-                level = CONCAT(SUBSTRING(level, 1, 1), CAST(SUBSTRING(level, 2) AS UNSIGNED) + 1)
-            WHERE urutan >=" . $urutanPadaLevelTersedia['urutan'];
-                // dd($query);
+                if ($urutanPadaLevelTersedia) {
+                    $urutanPadaLevelBaru = $urutanPadaLevelTersedia['urutan'];
+                    $query = "
+                UPDATE level
+                SET urutan = urutan + 1,
+                    level = CONCAT(SUBSTRING(level, 1, 1), CAST(SUBSTRING(level, 2) AS UNSIGNED) + 1)
+                WHERE urutan >=" . $urutanPadaLevelBaru;
+                    $data['urutan'] = $urutanPadaLevelBaru;
 
-                $db->query($query);
-                if ($query) {
-                    return $data;
+                    $db->query($query);
+                    if ($query) {
+                        return $data;
+                    } else {
+                        return false;
+                    }
                 } else {
                     return false;
                 }

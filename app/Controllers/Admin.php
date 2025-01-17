@@ -784,16 +784,20 @@ class Admin extends BaseController
 
         // dd($combinedLevel);
 
-        $inputMengurut = $this->level->coba(
-            [
-                "jilid" => $jilid,
-                "level" => $level,
-                "id_level" => $id_level,
-                "materi" => $materi,
-                "tema" => $tema,
-                "combinedLevel" => $combinedLevel,
-            ]
-        );
+        $data = [
+            "jilid" => $jilid,
+            "level" => $level,
+            "id_level" => $id_level,
+            "materi" => $materi,
+            "tema" => $tema,
+            "combinedLevel" => $combinedLevel,
+            'urutan' => null,
+        ];
+
+        $inputMengurut = $this->level->coba($data);
+        // dd($inputMengurut);
+
+
         if ($inputMengurut == false) {
             session()->setFlashdata(['msg' => 'Data gagal ditambahkan', 'warna' => 'danger']);
             return redirect()->back()->withInput();
@@ -872,24 +876,26 @@ class Admin extends BaseController
 
         if (!is_null($id_level)) {
             $ab = $this->level->update($id_level, [
-                'jilid' => $jilid,
-                'materi' => $materi,
-                'level' => $combinedLevel,
-                'tema' => $tema,
-            ]);
-            if ($ab) {
-                session()->setFlashdata(['msg' => 'Data Berhasil ditambahkan', 'warna' => 'success']);
-            }
-        } else {
-            $ab =  $this->level->save([
-                'jilid' => $jilid,
-                'materi' => $materi,
-                'level' => $combinedLevel,
-                'tema' => $tema,
-
+                'jilid' => $inputMengurut['jilid'],
+                'materi' => $inputMengurut['materi'],
+                'level' => $inputMengurut['combinedLevel'],
+                'tema' => $inputMengurut['tema'],
+                'urutan' => $inputMengurut['urutan'],
             ]);
             if ($ab) {
                 session()->setFlashdata(['msg' => 'Data Berhasil diubah', 'warna' => 'success']);
+            }
+        } else {
+            $ab =  $this->level->save([
+                'jilid' => $inputMengurut['jilid'],
+                'materi' => $inputMengurut['materi'],
+                'level' => $inputMengurut['combinedLevel'],
+                'tema' => $inputMengurut['tema'],
+                'urutan' => $inputMengurut['urutan'],
+
+            ]);
+            if ($ab) {
+                session()->setFlashdata(['msg' => 'Data Berhasil ditambahkan', 'warna' => 'success']);
             }
         }
 
