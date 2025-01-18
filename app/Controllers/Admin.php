@@ -773,16 +773,14 @@ class Admin extends BaseController
     public function simpan_level()
     {
         $db = db_connect();
-        $jilid = $this->request->getPost('jilid');
+        $jilid = strtoupper($this->request->getPost('jilid'));
         $level = $this->request->getPost('level');
         $id_level = $this->request->getVar('id_level');
-        $materi = $this->request->getVar('materi');
+        $materi = strtoupper($this->request->getVar('materi'));
         $tema = $this->request->getVar('tema');
 
         // Gabungkan jilid dan level
         $combinedLevel = $jilid . $level;  // Hasilnya: 'a8'
-
-        // dd($combinedLevel);
 
         $data = [
             "jilid" => $jilid,
@@ -793,15 +791,28 @@ class Admin extends BaseController
             "combinedLevel" => $combinedLevel,
             'urutan' => null,
         ];
+        // dd($combinedLevel);
 
         $inputMengurut = $this->level->coba($data);
-        // dd($inputMengurut);
 
+        if ($id_level != null) {
+            $urutkan = $this->level->urutkanLevelHapus($id_level);
 
-        if ($inputMengurut == false) {
-            session()->setFlashdata(['msg' => 'Data gagal ditambahkan', 'warna' => 'danger']);
-            return redirect()->back()->withInput();
+            // dd($inputMengurut);
+            if ($urutkan == false || $inputMengurut == false) {
+                session()->setFlashdata(['msg' => 'Data gagal diubah', 'warna' => 'danger']);
+                return redirect()->back()->withInput();
+            }
+        } else {
+
+            if ($inputMengurut == false) {
+                session()->setFlashdata(['msg' => 'Data gagal ditambahkan', 'warna' => 'danger']);
+                return redirect()->back()->withInput();
+            }
         }
+
+
+
 
 
 

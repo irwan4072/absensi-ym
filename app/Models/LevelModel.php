@@ -49,7 +49,7 @@ class LevelModel extends Model
             // d($data['level']);
             // dd($levelMax);
             if ($data['level'] > $levelMax) {
-                $data['combinedLevel'] = $levelMax + 1;
+                $data['combinedLevel'] = $data['jilid'] . $levelMax + 1;
                 $urutanPadaLevelbaru = $cekKetersediaanJilid['urutan'] + 1;
                 // dd($urutanPadaLevelbaru);
 
